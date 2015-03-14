@@ -30,7 +30,7 @@
         <p></p>
         <div class="form-group">
             <label for="comment">Timecodes (one per line):</label>
-            <textarea class="form-control" rows="5" id="textarea-timecodes">42</textarea>
+            <textarea class="form-control" rows="5" id="textarea-timecodes">1:42, 5:19</textarea>
         </div>
         <button class="btn btn-default" id="calculate">Calculate</button>
         <div class="form-group">
@@ -50,34 +50,47 @@
     <script type="text/javascript">
     
         $('#calculate').click(function() {
-            var timecode = $('#textarea-timecodes').val().split('\n');
-            for (i = 0; i < timecode.length; i++) {
-                console.log("timecode = " + timecode[i]);
-                timecode[i] = parseInt(timecode[i]);
-                if timecode[i]
-            };
-            calculateTimeCode();
+            var timecodeText = $('#textarea-timecodes').val();
+
+            if (timecodeText == "") {
+                  $('#answer').html("Answer: 0");
+            } else {
                 
-            
-        function calculateTimeCode(){ 
-            var addTimecodes = timecode.reduce(function(a, b) {
-                  return a + b;
-                });
-                console.log("calculated = " + addTimecodes);
-                $('#answer').html("Answer: " + addTimecodes);
-        }
-                
-                
-                
-                
-                
-                if (timecode.length > 4 && timecode.indexOf(":") > -1) {
-                        //console.log(timecode[i] + " is 2 characters long and has a colon");
-                    }; 
-                if (!isNaN(timecode[i])) {
-                    //console.log(timecode[i] + " is a number");       
+                if (timecodeText.indexOf("\n") > -1) {
+                    var timecode = timecodeText.split('\n');
                 }
+                console.log(timecode);
+                if (timecodeText.indexOf(",") > -1) {
+                    var timecode = timecodeText.split(',');
+                }
+                if (timecodeText.indexOf(";") > -1) {
+                    var timecode = timecodeText.split(';');
+                }
+                
+                for (i = 0; i < timecode.length; i++) {
+                    if (timecode[i].indexOf(":") > -1 ) {
+                        var timeArray = timecode[i].split(":",2);
+                        timecode[i] = (parseInt(timeArray[0]) * 60) + (parseInt(timeArray[1]));
+                        console.log("totalTime = " + timecode[i]);
+                    }
+                };
+                calculateTimeCode();
+            };
             
+            
+            function calculateTimeCode(){ 
+              
+              var addTimecodes = timecode.reduce(function(a, b) {
+                  return a + b;
+              });
+              var addTimecodesMinutes = Math.floor(addTimecodes / 60);
+              var addTimescodesSeconds = addTimecodes % 60;
+              if (addTimescodesSeconds.toString().length < 2) {
+                console.log(addTimescodesSeconds.toString().length)
+                addTimescodesSeconds = "0" + addTimescodesSeconds;
+              }
+              $('#answer').html("Answer: " + addTimecodesMinutes + ":" + addTimescodesSeconds);  
+            }
         });
     
     </script>
