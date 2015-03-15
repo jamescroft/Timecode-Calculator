@@ -29,72 +29,95 @@
     <div class="container">
         <p></p>
         <div class="form-group">
-            <label for="comment">Timecodes (one per line):</label>
-            <textarea class="form-control" rows="5" id="textarea-timecodes">1:42, 5:19</textarea>
+            <label for="comment">Timecodes (either one per line, comma seperated, or semi-colon seperated):</label>
+            <textarea class="form-control" rows="5" id="textarea-timecodes" placeholder="1:42, 5:19, 6:00">1:42, 5:19, 6:00</textarea>
         </div>
         <button class="btn btn-default" id="calculate">Calculate</button>
         <div class="form-group">
-            <p class="help-block" id="answer"></p>
-          </div>
+            <p class="help-block" id="answer">Answer: 13:01</p>
+        </div>
         <div class="form-group">
-        
+
         </div>
     </div>
-    
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
-    
+
     <script type="text/javascript">
-    
-        $('#calculate').click(function() {
+        $('#calculate').click(function () {
             var timecodeText = $('#textarea-timecodes').val();
 
-            if (timecodeText == "") {
-                  $('#answer').html("Answer: 0");
+            if (validateTextInput(timecodeText)) {
+                var timecode = createTimecodeArray(timecodeText);
+                convertToSeconds(timecode);
+                calculateTimeCode();
             } else {
-                
-                if (timecodeText.indexOf("\n") > -1) {
-                    var timecode = timecodeText.split('\n');
+                $('#answer').html("Answer: Sorry, please input a valid entry");
+            };
+
+            //detect delimiters and split timecodes into array
+            function createTimecodeArray(timecodeText) {
+                var delimiter = ["\n", ",", ";"];
+                var numberOfDelimiters = 0;
+                for (i = 0; i < delimiter.length; i++) {
+                    if (timecodeText.indexOf(delimiter[i]) > -1) {
+                        return timecodeText.split(delimiter[i]);
+                        break;
+                    }
                 }
-                console.log(timecode);
-                if (timecodeText.indexOf(",") > -1) {
-                    var timecode = timecodeText.split(',');
+            };
+
+            //detecting whether there's only 1 type of delimiter
+            function validateTextInput(timecodeText) {
+                if (timecodeText == "" || timecodeText == 0) {
+                    return false;
+                };
+                var delimiter = ["\n", ",", ";"];
+                var numberOfDelimiters = 0;
+                for (i = 0; i < delimiter.length; i++) {
+                    if (timecodeText.indexOf(delimiter[i]) > -1) {
+                        numberOfDelimiters++;
+                        console.log("number of delimiters " + numberOfDelimiters);
+                    }
                 }
-                if (timecodeText.indexOf(";") > -1) {
-                    var timecode = timecodeText.split(';');
+                if (numberOfDelimiters > 1) {
+                    console.log("more than 1 delimiter type");
+                    return false;
+                } else {
+                    console.log("only 1 delimiter type");
+                    return true;
                 }
-                
+            };
+
+            //take timecodes and convert into seconds integer
+            function convertToSeconds(timecode) {
                 for (i = 0; i < timecode.length; i++) {
-                    if (timecode[i].indexOf(":") > -1 ) {
-                        var timeArray = timecode[i].split(":",2);
+                    if (timecode[i].indexOf(":") > -1) {
+                        var timeArray = timecode[i].split(":", 2);
                         timecode[i] = (parseInt(timeArray[0]) * 60) + (parseInt(timeArray[1]));
-                        console.log("totalTime = " + timecode[i]);
+                        console.log("totalTime of step " + i + " = " + timecode[i]);
                     }
                 };
-                calculateTimeCode();
             };
-            
-            
-            function calculateTimeCode(){ 
-              
-              var addTimecodes = timecode.reduce(function(a, b) {
-                  return a + b;
-              });
-              var addTimecodesMinutes = Math.floor(addTimecodes / 60);
-              var addTimescodesSeconds = addTimecodes % 60;
-              if (addTimescodesSeconds.toString().length < 2) {
-                console.log(addTimescodesSeconds.toString().length)
-                addTimescodesSeconds = "0" + addTimescodesSeconds;
-              }
-              $('#answer').html("Answer: " + addTimecodesMinutes + ":" + addTimescodesSeconds);  
+
+            //sum all timecodes together, convert back into minutes & seconds, print answer
+            function calculateTimeCode() {
+                var addTimecodes = timecode.reduce(function (a, b) {
+                    return a + b;
+                });
+                var addTimecodesMinutes = Math.floor(addTimecodes / 60);
+                var addTimescodesSeconds = addTimecodes % 60;
+                if (addTimescodesSeconds.toString().length < 2) {
+                    addTimescodesSeconds = "0" + addTimescodesSeconds;
+                }
+                $('#answer').html("Answer: " + addTimecodesMinutes + ":" + addTimescodesSeconds);
             }
         });
-    
     </script>
-    
+
 </body>
 
 </html>
