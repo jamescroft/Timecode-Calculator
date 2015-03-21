@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>Timecode Calculator</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -22,7 +22,7 @@
     <div class="jumbotron">
         <div class="container">
             <h1>Timecode Calculator</h1>
-            <p class="lead">Grab a bunch of timecodes and add them up.</p>
+            <p class="lead">Grab a bunch of timecodes (in hours, minutes and seconds), add them up.</p>
         </div>
     </div>
 
@@ -30,12 +30,12 @@
         <p></p>
         <div class="form-group">
             <label for="comment">Enter timecodes (either one per line, comma seperated, or semi-colon seperated):</label>
-            <textarea class="form-control" rows="5" id="textarea-timecodes" placeholder="1:42, 5:19, 6:00">1:42, 5:19, 04:23:23</textarea>
+            <textarea class="form-control" rows="5" id="textarea-timecodes" placeholder="1:42, 5:19, 05:19, 6:00">0:22, 1:42, 5:19, 07:49, 11:23, 4:23:23, 06:23:06, 14:23:23</textarea>
         </div>
         <button class="btn btn-default" id="calculate">Calculate</button>
         <div class="form-group">
-            <p class="help-block" id="timecodes-answer">Timecodes: 1:42, 5:19, 6:00</p>
-            <p class="help-block" id="answer">Total: 13:01</p>
+            <p class="help-block" id="timecodes-answer"></p>
+            <p class="help-block" id="answer"></p>
         </div>
         <div class="form-group">
 
@@ -53,13 +53,8 @@
             timecodeText = timecodeText.replace(/\s+/g, '');
             if (validateTextInput(timecodeText)) {
                 var timecode = createTimecodeArray(timecodeText);
-                console.log(timecodeText);
-//                for (i = 0; timecode.length; i++) {
-//                    var timecodeAnswer = timecode[i] + " + ";
-//                }
-                
                 convertToSeconds(timecode);
-                calculateTimeCode();
+                calculateTimeCode(timecode);
             } else {
                 $('#answer').html("Total: Sorry, please input valid timecodes (eg. 3:26, 03:26, 23:59)");
             };
@@ -91,6 +86,7 @@
                         numberOfDelimiters++;
                     }
                 }
+                
                 if (numberOfDelimiters > 1) {
                     return false;
                 };
@@ -102,24 +98,27 @@
                     }   
                 }
                 for (j = 0; j < timecodeValidate.length; j++) {
-                    console.log(timecodeValidate[j]);
                     
                     //remove leading zero
-                    
                     if (timecodeValidate[j].charAt(0) == 0) {
+
                         timecodeValidate[j] = timecodeValidate[j].substring(1);
+
                     }
-                        
-                        
-                    
+                           
+                    console.log (timecodeValidate[j]);
                     // time is a 4 character string with a colon in the 2nd position
-                    if ( (timecodeValidate[j].length == 4) && (timecodeValidate[j].charAt(timecodeValidate.length - 2) != ":")) {
+                    if ( (timecodeValidate[j].length) <= 5 && (timecodeValidate[j].charAt(timecodeValidate[j].length - 2) == ":") ) {
+                        
+                        console.log (timecodeValidate[j]);
                         console.log ("detected an invalid 4 char string");
                         return false
                     }
                     
                     // time is a 7 character string with a colon in the 2nd and 5th position
-                    if ((timecodeValidate[j].length == 7) && (timecodeValidate[j].charAt(timecodeValidate.length - 2)) != ":" && (timecodeValidate[j].charAt(timecodeValidate.length - 4) != ":")) {
+                    if ((timecodeValidate[j].length == 7) && (timecodeValidate[j].charAt(timecodeValidate.length - 2)) == ":" && (timecodeValidate[j].charAt(timecodeValidate.length - 4) == ":")) {
+                        
+                        console.log (timecodeValidate[j]);
                         console.log ("detected an invalid 7 char string");
                         return false
                     }
@@ -127,9 +126,7 @@
                 }
                 
                 return true;
-                
-                
-                
+
             };
 
             //take timecodes and convert into seconds integer, print string of timecodes
@@ -144,11 +141,25 @@
                     };
                     
                     // split the timecodes, convert them into seconds
-                    if (timecode[i].indexOf(":") > -1) {
+                    //if (timecode[i].indexOf(":") > -1) {
+                    
+                    if (timecode[i].charAt(0) == 0) {
+                        timecode[i] = timecode[i].substring(1);
+                    }
+                    
+                      if (timecode[i].length == 3 && timecode[i].charAt(0) == ":") {
+                        timecode[i] = timecode[i].substring(1);
+                        var timeArray = timecode[i].split(":", 2);
+                        timecode[i] = parseInt(timeArray[0]);
+                      }
+                      if (timecode[i].length == 4 || timecode[i].length == 5) {
                         var timeArray = timecode[i].split(":", 2);
                         timecode[i] = (parseInt(timeArray[0]) * 60) + (parseInt(timeArray[1]));
-                        console.log("totalTime of step " + i + " = " + timecode[i]);
-                    }
+                      }
+                      if (timecode[i].length >= 7) {
+                        var timeArray = timecode[i].split(":", 3);
+                        timecode[i] = (parseInt(timeArray[0]) * 3600) + (parseInt(timeArray[1]) * 60) + (parseInt(timeArray[2]));
+                      }
                 };
                 
                 // print 
@@ -156,16 +167,25 @@
             };
 
             //sum all timecodes together, convert back into minutes & seconds, print answer
-            function calculateTimeCode() {
+            function calculateTimeCode(timecode) {
                 var addTimecodes = timecode.reduce(function (a, b) {
                     return a + b;
                 });
-                var addTimecodesMinutes = Math.floor(addTimecodes / 60);
-                var addTimescodesSeconds = addTimecodes % 60;
+                var addTimecodesHours = Math.floor(addTimecodes / 3600);
+                var addTimecodesMinutes = Math.floor((addTimecodes / 60) - (addTimecodesHours * 60));
+                var addTimescodesSeconds = Math.floor((addTimecodes - ((addTimecodesHours * 3600) + (addTimecodesMinutes * 60))));
+                    console.log("addTimecodesHours: " + addTimecodesHours);
+                    console.log("addTimecodesMinutes: " + addTimecodesMinutes);
+                    console.log("addTimecodesSeconds: " + addTimescodesSeconds);
+                
+                
                 if (addTimescodesSeconds.toString().length < 2) {
                     addTimescodesSeconds = "0" + addTimescodesSeconds;
-                }
-                $('#answer').html("Total: " + addTimecodesMinutes + ":" + addTimescodesSeconds);
+                };
+                if ( (addTimecodesHours > 0) && (addTimecodesMinutes.toString().length < 2) ) {
+                    addTimecodesMinutes = "0" + addTimecodesMinutes;
+                };
+                $('#answer').html("Total: " + addTimecodesHours + ":" + addTimecodesMinutes + ":" + addTimescodesSeconds);
             }
         });
     </script>
