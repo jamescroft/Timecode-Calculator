@@ -47,14 +47,6 @@
             <p class="lead">Grab a bunch of timecodes (in hours, minutes and seconds) and add them up.</p>
             </div>
             <div class="col-sm-4">
-            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- Timecode Calculator Jumbotron -->
-            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8168184751026221" data-ad-slot="6207784590" data-ad-format="auto"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>   
-                
-                
             </div>
         </div>
     </div>
@@ -69,18 +61,28 @@
                 <button class="btn btn-default" id="calculate">Calculate</button>
             </div>
 
-            <div class="panel panel-default panel-answer hide">
+            <div class="panel panel-default panel-answer">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Answer</h3>
+                    <h3 class="panel-title">Total:</h3>
                 </div>
                 <div class="panel-body">
                     <p class="help-block" id="timecodes-answer"></p>
-                    <p class="help-block" id="answer"></p>
+                    <p class="help-block" id="answer"><em>Waiting for input...</em></p>
                 </div>
             </div>
         </div>
 
         <div class="col-sm-4">
+            <p>Support the site by visiting our ads.</p> 
+            
+            <script>
+            var adblocked = window.adblocked;
+            adblocked.check(function(error, result) {
+              var output = "adblock is " + (result ? "running" : "not running");
+              alert(output);
+            });
+            </script>
+            
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
             <!-- Timecode Calculator -->
             <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-8168184751026221" data-ad-slot="7684517793" data-ad-format="auto"></ins>
