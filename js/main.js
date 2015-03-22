@@ -6,7 +6,7 @@ $('#calculate').click(function () {
         convertToSeconds(timecode);
         calculateTimeCode(timecode);
     } else {
-        $('.panel-answer').removeClass("panel-default hide").addClass("panel-danger show");
+        $('.panel-answer').removeClass("panel-default panel-success").addClass("panel-danger show");
         $('#answer').html("Sorry, please input valid timecodes in hours, minutes and seconds (eg. 0:22, 3:26, 15:26, 4:23:59), and only one kind of seperator.");
         $('#timecodes-answer').html("");
     };
@@ -134,7 +134,7 @@ $('#calculate').click(function () {
         if ((addTimecodesHours > 0) && (addTimecodesMinutes.toString().length < 2)) {
             addTimecodesMinutes = "0" + addTimecodesMinutes;
         };
-        $('.panel-answer').removeClass("panel-default hide").addClass("panel-success show");
+        $('.panel-answer').removeClass("panel-default panel-danger").addClass("panel-success show");
         $('#answer').html(
             function () {
                 if (addTimecodesHours > 0) {
